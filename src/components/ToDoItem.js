@@ -18,9 +18,31 @@ const formatDate = (dateString) => {
   return `${formattedDate} ${formattedTime}`;
 };
 
+const timeRemaining = (dueDate) => {
+  const now = new Date();
+  const due = new Date(dueDate);
+  const timeRemaining = due - now;
+
+  if (timeRemaining <= 0) return "due date passed";
+
+  const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+  const hours = Math.floor(
+    (timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+  );
+  const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+
+  if (days > 0) {
+    return `${days}d ${hours}h ${minutes}m`;
+  } else if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  } else {
+    return `${minutes}m`;
+  }
+};
+
 const ToDoItem = ({ task, toggleComplete, removeTask }) => {
   const titleColor = isDarkColor(task.color) ? "white" : "black";
-  const dueColor = isDarkColor(task.color) ? "#6b7280" : "#4b5563";
+  const dueColor = isDarkColor(task.color) ? "#d1d5db" : "#1f2937";
 
   return (
     <div
@@ -52,8 +74,12 @@ const ToDoItem = ({ task, toggleComplete, removeTask }) => {
           X
         </button>
       </div>
+
       <div className="text-xs mt-2">
         <span style={{ color: dueColor }}>due: {formatDate(task.dueDate)}</span>
+        <div style={{ color: dueColor }}>
+          time remaining: {timeRemaining(task.dueDate)}
+        </div>
       </div>
     </div>
   );
