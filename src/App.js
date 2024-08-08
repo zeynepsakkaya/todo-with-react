@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import ToDoForm from "./components/ToDoForm";
 import ToDoList from "./components/ToDoList";
@@ -67,18 +67,24 @@ function App() {
 
         {isFormVisible && <ToDoForm addTask={addTask} />}
 
-        <div className="my-4">
-          <label className="mr-2">sort by</label>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="p-2 border rounded"
-          >
-            <option value="dateAdded">date added</option>
-            <option value="timeRemaining">time remaining (lowest to highest)</option>
-            <option value="dueDate">time remaining (highest to lowest)</option>
-          </select>
-        </div>
+        {tasks.length > 0 && (
+          <div className="my-4">
+            <label className="mr-2">Sort by</label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="p-2 border rounded"
+            >
+              <option value="dateAdded">Date Added</option>
+              <option value="timeRemaining">
+                Time Remaining (lowest to highest)
+              </option>
+              <option value="dueDate">
+                Time Remaining (highest to lowest)
+              </option>
+            </select>
+          </div>
+        )}
 
         <ToDoList
           tasks={sortedTasks}

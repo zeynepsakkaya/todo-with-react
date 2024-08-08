@@ -27,7 +27,7 @@ const ToDoForm = ({ addTask }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-purple-200 p-4 rounded shadow-2xl shadow-black"
+      className="bg-blue-100 p-4 rounded shadow-2xl shadow-black"
     >
       <div className="mb-4">
         <label htmlFor="task" className="block text-gray-700">
