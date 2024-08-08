@@ -7,6 +7,15 @@ const ToDoForm = ({ addTask }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const now = new Date();
+    const selectedDate = new Date(dueDate);
+
+    if (selectedDate < now) {
+      alert("Due date cannot be in the past.");
+      return;
+    }
+
     if (input.trim()) {
       addTask({ text: input, dueDate, color });
       setInput("");

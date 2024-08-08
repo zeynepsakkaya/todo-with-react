@@ -6,6 +6,7 @@ import ToDoList from "./components/ToDoList";
 function App() {
   const [tasks, setTasks] = useState([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const [sortBy, setSortBy] = useState("dateAdded");
 
   const addTask = (task) => {
     const newTask = {
@@ -16,7 +17,7 @@ function App() {
       completed: false,
     };
     setTasks([...tasks, newTask]);
-    setIsFormVisible(false); // Hide the form after adding a task
+    setIsFormVisible(false);
   };
 
   const toggleComplete = (taskId) => {
@@ -31,6 +32,28 @@ function App() {
     setTasks(tasks.filter((task) => task.id !== taskId));
   };
 
+  const sortedTasks = [...tasks].sort((a, b) => {
+    if (a.completed !== b.completed) {
+      return a.completed ? 1 : -1;
+    }
+
+    if (sortBy === "dateAdded") {
+      return b.id - a.id;
+    } else if (sortBy === "timeRemaining") {
+      const now = new Date();
+      const timeRemainingA = new Date(a.dueDate) - now;
+      const timeRemainingB = new Date(b.dueDate) - now;
+      return timeRemainingA - timeRemainingB;
+    } else if (sortBy === "dueDate") {
+      const now = new Date();
+      const timeRemainingA = new Date(a.dueDate) - now;
+      const timeRemainingB = new Date(b.dueDate) - now;
+      return timeRemainingB - timeRemainingA;
+    }
+
+    return 0;
+  });
+
   return (
     <div className="min-h-screen">
       <Header />
@@ -44,8 +67,21 @@ function App() {
 
         {isFormVisible && <ToDoForm addTask={addTask} />}
 
+        <div className="my-4">
+          <label className="mr-2">sort by</label>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="p-2 border rounded"
+          >
+            <option value="dateAdded">date added</option>
+            <option value="timeRemaining">time remaining (lowest to highest)</option>
+            <option value="dueDate">time remaining (highest to lowest)</option>
+          </select>
+        </div>
+
         <ToDoList
-          tasks={tasks}
+          tasks={sortedTasks}
           toggleComplete={toggleComplete}
           removeTask={removeTask}
         />
