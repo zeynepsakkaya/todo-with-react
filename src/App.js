@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import ToDoForm from "./components/ToDoForm";
 import ToDoList from "./components/ToDoList";
@@ -8,28 +8,73 @@ function App() {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [sortBy, setSortBy] = useState("dateAdded");
 
-  const addTask = (task) => {
-    const newTask = {
-      id: Date.now(),
-      text: task.text,
-      dueDate: task.dueDate,
-      color: task.color,
-      completed: false,
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/tasks");
+        const data = await res.json();
+        setTasks(data);
+      } catch (err) {
+        console.error("Error fetching tasks:", err);
+      }
     };
-    setTasks([...tasks, newTask]);
-    setIsFormVisible(false);
+    fetchTasks();
+  }, []);
+
+  const addTask = async (task) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/tasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(task),
+      });
+
+      const data = await res.json();
+      setTasks([...tasks, data]);
+      setIsFormVisible(false);
+    } catch (err) {
+      console.error("Error adding task:", err);
+    }
   };
 
-  const toggleComplete = (taskId) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
-    );
+  const toggleComplete = async (taskId) => {
+    const taskToUpdate = tasks.find((task) => task._id === taskId);
+
+    if (!taskToUpdate) {
+      console.error("Task not found");
+      return;
+    }
+
+    const updatedTask = { ...taskToUpdate, completed: !taskToUpdate.completed };
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedTask),
+      });
+
+      const data = await res.json();
+      setTasks(tasks.map((task) => (task._id === taskId ? data : task)));
+    } catch (err) {
+      console.error("Error updating task:", err);
+    }
   };
 
-  const removeTask = (taskId) => {
-    setTasks(tasks.filter((task) => task.id !== taskId));
+  const removeTask = async (taskId) => {
+    try {
+      await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+        method: "DELETE",
+      });
+
+      setTasks(tasks.filter((task) => task._id !== taskId));
+    } catch (err) {
+      console.error("Error deleting task:", err);
+    }
   };
 
   const sortedTasks = [...tasks].sort((a, b) => {

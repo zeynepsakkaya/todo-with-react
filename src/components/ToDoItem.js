@@ -54,7 +54,7 @@ const ToDoItem = ({ task, toggleComplete, removeTask }) => {
           <input
             type="checkbox"
             checked={task.completed}
-            onChange={() => toggleComplete(task.id)}
+            onChange={() => toggleComplete(task._id)}
             className="mr-3"
           />
           <span
@@ -67,7 +67,7 @@ const ToDoItem = ({ task, toggleComplete, removeTask }) => {
           </span>
         </div>
         <button
-          onClick={() => removeTask(task.id)}
+          onClick={() => removeTask(task._id)}
           style={{ color: titleColor }}
           className="text-l hover:text-2xl"
         >
